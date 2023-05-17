@@ -40,11 +40,8 @@ const userController = {
         password,
         company_id,
       });
-      return await db.User.findAll().then((result) => {
-        res.send({
-          msg: `new user added`,
-          data: result,
-        });
+      return res.send({
+        message: "register berhasil",
       });
     } catch (err) {
       console.log(err);
