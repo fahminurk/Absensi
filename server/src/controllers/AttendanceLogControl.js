@@ -2,7 +2,9 @@ const db = require("../models");
 
 const AttendanceLogController = {
   getAll: async (req, res) => {
-    const AttendanceLog = await db.AttendanceLog.findAll();
+    const AttendanceLog = await db.AttendanceLog.findAll({
+      include: { model: db.User, as: "User" },
+    });
     console.log(AttendanceLog);
     return res.send(AttendanceLog);
   },
@@ -17,10 +19,11 @@ const AttendanceLogController = {
 
   insertAttendanceLog: async (req, res) => {
     try {
-      const { checkIn, checkOut } = req.body;
+      const { checkIn, checkOut, user_id } = req.body;
       await db.AttendanceLog.create({
         checkIn,
         checkOut,
+        user_id,
       });
       return await db.AttendanceLog.findAll().then((result) => {
         res.send({

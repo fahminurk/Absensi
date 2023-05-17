@@ -3,7 +3,9 @@ const db = require("../models");
 const userController = {
   getAll: async (req, res) => {
     try {
-      const user = await db.User.findAll();
+      const user = await db.User.findAll({
+        include: [{ model: db.Company, as: "Company" }],
+      });
       console.log(user);
       return res.send(user);
     } catch (err) {
@@ -30,12 +32,13 @@ const userController = {
   },
   insertUser: async (req, res) => {
     try {
-      const { name, address, email, password } = req.body;
+      const { name, address, email, password, company_id } = req.body;
       await db.User.create({
         name,
         address,
         email,
         password,
+        company_id,
       });
       return await db.User.findAll().then((result) => {
         res.send({

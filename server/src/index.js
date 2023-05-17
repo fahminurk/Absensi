@@ -12,7 +12,7 @@ const routes = require("./routes");
 // Lecturer.sync();
 // db.Branch.sync({ alter: true });
 
-db.sequelize.sync({ alter: true });
+// db.sequelize.sync({ alter: true });
 
 app.use(cors());
 app.use(express.json());
@@ -21,7 +21,7 @@ app.get("/", (req, res) => res.send("sequelize"));
 
 app.use("/users", routes.userRoutes);
 app.use("/attendanceLogs", routes.attendanceLogRoutes);
-app.use("/company", routes.companyRoutes);
+app.use("/companies", routes.companyRoutes);
 
 app.listen(PORT, () => {
   console.log(`server is running on PORT: ${PORT}`);
