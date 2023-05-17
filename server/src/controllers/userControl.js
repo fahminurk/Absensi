@@ -98,6 +98,30 @@ const userController = {
       );
     } catch (err) {}
   },
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await db.User.findOne({
+        where: {
+          email,
+          password,
+        },
+      });
+
+      if (!user?.dataValues.id) {
+        return res.send({
+          msg: "login gagal",
+        });
+      }
+      return res.send({
+        msg: "login berhasil",
+        value: user,
+      });
+    } catch (err) {
+      console.log(err.message);
+      return res.status(500).send(err.message);
+    }
+  },
 };
 
 module.exports = userController;
