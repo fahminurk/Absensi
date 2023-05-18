@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const attendanceLogController =
-  require("../controllers").AttendanceLogController;
+  require("../controllers").attendanceLogController;
 
 //get
 router.get("/", attendanceLogController.getAll);

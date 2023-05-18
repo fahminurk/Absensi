@@ -11,7 +11,7 @@ export default function DashboardPage() {
           <Box
             padding={"30px"}
             w="100vw"
-            maxW="500px"
+            maxW="400px"
             bgGradient="linear(to-b, red, white)"
           >
             <Center fontWeight={"500"} flexDir={"column"} h="400px">

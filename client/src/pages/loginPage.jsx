@@ -6,13 +6,19 @@ import {
   Button,
   InputGroup,
   InputRightElement,
+  useToast,
+  Toast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+// import { userLogin } from "../redux/userauth";
+// import { useDispatch } from "react-redux";
 
 export default function LoginPage() {
   const nav = useNavigate();
+  // const dispatch = useDispatch();
+  // const toast = useToast();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
   const [user, setUser] = useState({
@@ -29,23 +35,49 @@ export default function LoginPage() {
   };
 
   const login = async () => {
-    const result = await axios.post("http://localhost:2000/users/v1", user);
-    console.log(result.data);
-    // alert(result.data.message);
-    if (!result.data.value) {
-      alert("email atau password salah");
+    if (!user.email && !user.password) {
+      alert("isi semua");
     } else {
-      nav("/");
+      const result = await axios.post("http://localhost:2000/users/v1", user);
+      console.log(result.data);
+      // alert(result.data.message);
+      if (!result.data.value) {
+        alert("email atau password salah");
+      } else {
+        alert(result.data.message);
+        nav("/");
+      }
+      return;
     }
-    return;
   };
+
+  // async function login() {
+  //   const status = await dispatch(userLogin(user));
+  //   alert(status);
+
+  //   if (status) {
+  //     toast({
+  //       title: "Account Created.",
+  //       status: "success",
+  //       duration: 9000,
+  //       isClosable: true,
+  //     });
+  //     return nav("/");
+  //   }
+  //   return toast({
+  //     title: "Wrong Email/Password.",
+  //     status: "error",
+  //     duration: 9000,
+  //     isClosable: true,
+  //   });
+  // }
 
   return (
     <Box w="100vw" h="100vh" bgGradient="linear(to-b, white, #21b3b8)">
       <Center w="100%" h="100%">
         <Flex
           bgGradient="linear(to-b, #21b3b8, white)"
-          w="300px"
+          w="400px"
           flexDir={"column"}
           padding="20px"
           gap="10px"

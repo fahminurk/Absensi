@@ -1,9 +1,9 @@
 const userController = require("./userControl");
-const AttendanceLogController = require("./AttendanceLogControl");
+const attendanceLogController = require("./AttendanceLogControl");
 const companyController = require("./CompanyControl");
 
 module.exports = {
   userController,
-  AttendanceLogController,
+  attendanceLogController,
   companyController,
 };

@@ -11,7 +11,7 @@ const userController = {
     } catch (err) {
       console.log(err);
       return res.status(500).send({
-        msg: err.message,
+        message: err.message,
       });
     }
   },
@@ -26,7 +26,7 @@ const userController = {
     } catch (err) {
       console.log(err);
       return res.status(500).send({
-        msg: err.message,
+        message: err.message,
       });
     }
   },
@@ -46,7 +46,7 @@ const userController = {
     } catch (err) {
       console.log(err);
       return res.status(500).send({
-        msg: err.message,
+        message: err.message,
       });
     }
   },
@@ -72,14 +72,14 @@ const userController = {
         },
       }).then((result) =>
         res.send({
-          msg: `ID ${req.params.id} has been updated`,
+          message: `ID ${req.params.id} has been updated`,
           data: result,
         })
       );
     } catch (err) {
       console.log(err);
       return res.status(500).send({
-        msg: err.message,
+        message: err.message,
       });
     }
   },
@@ -92,7 +92,7 @@ const userController = {
       });
       return await db.User.findAll().then((result) =>
         res.send({
-          msg: `ID ${req.params.id} has been removed`,
+          message: `ID ${req.params.id} has been removed`,
           data: result,
         })
       );
@@ -110,11 +110,11 @@ const userController = {
 
       if (!user?.dataValues.id) {
         return res.send({
-          msg: "login gagal",
+          message: "login gagal",
         });
       }
       return res.send({
-        msg: "login berhasil",
+        message: "login berhasil",
         value: user,
       });
     } catch (err) {

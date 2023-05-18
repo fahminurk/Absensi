@@ -64,7 +64,7 @@ export default function RegisterPage() {
         <Flex
           // bgColor={"white"}
           bgGradient="linear(to-b, black, #303030)"
-          w="300px"
+          w="400px"
           flexDir={"column"}
           padding="20px"
           gap="10px"
