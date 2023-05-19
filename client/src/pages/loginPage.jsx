@@ -18,7 +18,7 @@ import axios from "axios";
 export default function LoginPage() {
   const nav = useNavigate();
   // const dispatch = useDispatch();
-  // const toast = useToast();
+  const toast = useToast();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
   const [user, setUser] = useState({
@@ -36,15 +36,35 @@ export default function LoginPage() {
 
   const login = async () => {
     if (!user.email && !user.password) {
-      alert("isi semua");
+      toast({
+        title: "fill in all data.",
+        status: "warning",
+        position: "top",
+        duration: 1000,
+        isClosable: true,
+      });
     } else {
       const result = await axios.post("http://localhost:2000/users/v1", user);
       console.log(result.data);
       // alert(result.data.message);
       if (!result.data.value) {
-        alert("email atau password salah");
+        // alert("email atau password salah");
+        toast({
+          title: "Wrong Email/Password.",
+          status: "error",
+          position: "top",
+          duration: 1000,
+          isClosable: true,
+        });
       } else {
-        alert(result.data.message);
+        // alert(result.data.message);
+        toast({
+          title: "Success Login.",
+          status: "success",
+          position: "top",
+          duration: 2000,
+          isClosable: true,
+        });
         nav("/");
       }
       return;

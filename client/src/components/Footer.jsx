@@ -15,7 +15,7 @@ export default function Footer() {
           color="white"
           fontWeight={"500"}
         >
-          <Link to="/attendance-log">
+          <Link to="/attendanceLog">
             <Box bg={"white"} borderRadius={5} p={1}>
               <AiOutlineFileText size={"30px"} color="red" />
             </Box>

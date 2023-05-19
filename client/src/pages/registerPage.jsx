@@ -11,10 +11,12 @@ import {
   InputRightElement,
   Link,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 
 export default function RegisterPage() {
   const nav = useNavigate();
+  const toast = useToast();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
 
@@ -37,24 +39,26 @@ export default function RegisterPage() {
   }
 
   const register = async () => {
-    try {
-      if (
-        !(
-          user.name &&
-          user.address &&
-          user.email &&
-          user.password &&
-          user.company_id
-        )
-      ) {
-        alert("isi semuanya");
-      } else {
-        const result = await axios.post("http://localhost:2000/users", user);
-        alert(result.data.message);
-        return nav("/login");
-      }
-    } catch (err) {
-      console.log("isi semau boss");
+    if (
+      !(
+        user.name &&
+        user.address &&
+        user.email &&
+        user.password &&
+        user.company_id
+      )
+    ) {
+      toast({
+        title: "fill in all data.",
+        status: "warning",
+        position: "top",
+        duration: 1000,
+        isClosable: true,
+      });
+    } else {
+      const result = await axios.post("http://localhost:2000/users", user);
+      alert(result.data.message);
+      return nav("/login");
     }
   };
 
