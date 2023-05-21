@@ -2,8 +2,55 @@ import { Box, Center, Flex, Button } from "@chakra-ui/react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import Footer from "../components/Footer";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { auth_types } from "../redux/types";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function DashboardPage() {
+  const userSelector = useSelector((state) => state.auth);
+  //
+  const LiveJam = () => {
+    const [time, setTime] = useState(moment().format("hh:mm:ss"));
+
+    useEffect(() => {
+      setTime(moment().format("hh:mm:ss"));
+    }, []);
+
+    useEffect(() => {
+      setTimeout(() => {
+        setTime(moment().format("hh:mm:ss"));
+      }, 1000);
+    }, [time]);
+
+    return <> {moment().format("hh:mm:ss")} </>;
+  };
+  //
+
+  // function inputHandler(e) {
+  //   const { id, value } = e.target;
+  //   const tempIn = { ...jamMasuk };
+  //   tempIn[id] = value;
+  //   setJamMasuk(tempIn);
+  // }
+
+  //
+  const jamm = moment().format("hh:mm");
+  console.log(jamm + " jammsekarang");
+
+  const [jamIn, setJamIn] = useState({
+    clockIn: jamm,
+    user_id: userSelector.id,
+  });
+
+  const jamMasuk = async () => {
+    const result = await axios.post(
+      "http://localhost:2000/attendanceLogs",
+      jamIn
+    );
+    console.log(result);
+  };
+
   return (
     <>
       <Flex h="100vh" justifyContent={"center"}>
@@ -17,12 +64,12 @@ export default function DashboardPage() {
             <Center fontWeight={"500"} flexDir={"column"} h="400px">
               <Box> Live Attendance</Box>
               <Center padding={"20px"} flexDir={"column"}>
+                welcome, {userSelector?.name}
                 <Box fontSize={"40px"} fontWeight={"500"}>
-                  {moment().format("LT")}
+                  {LiveJam()}
                 </Box>
                 <Box>
                   {moment().format("ddd")}, {moment().format("DD MMMM YYYY")}
-                  {/* {moment().format("llll").split(" ", 4)} */}
                 </Box>
               </Center>
 
@@ -50,7 +97,13 @@ export default function DashboardPage() {
                   h="100%"
                   gap="10px"
                 >
-                  <Button w="100%" maxW="180px" h="50px" bgColor="red">
+                  <Button
+                    w="100%"
+                    maxW="180px"
+                    h="50px"
+                    bgColor="red"
+                    onClick={jamMasuk}
+                  >
                     Clock In
                   </Button>
 

@@ -7,17 +7,16 @@ import {
   InputGroup,
   InputRightElement,
   useToast,
-  Toast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-// import { userLogin } from "../redux/userauth";
-// import { useDispatch } from "react-redux";
+import { userLogin } from "../redux/userauth";
+import { useDispatch } from "react-redux";
 
 export default function LoginPage() {
   const nav = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const toast = useToast();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
@@ -34,8 +33,45 @@ export default function LoginPage() {
     console.log(tempUser);
   };
 
+  // const login = async () => {
+  //   if (!user.email && !user.password) {
+  //     toast({
+  //       title: "fill in all data.",
+  //       status: "warning",
+  //       position: "top",
+  //       duration: 1000,
+  //       isClosable: true,
+  //     });
+  //   } else {
+  //     const result = await axios.post("http://localhost:2000/users/v1", user);
+  //     console.log(result.data);
+  //     // alert(result.data.message);
+  //     if (!result.data.value) {
+  //       // alert("email atau password salah");
+  //       toast({
+  //         title: "Wrong Email/Password.",
+  //         status: "error",
+  //         position: "top",
+  //         duration: 1000,
+  //         isClosable: true,
+  //       });
+  //     } else {
+  //       // alert(result.data.message);
+  //       toast({
+  //         title: "Success Login.",
+  //         status: "success",
+  //         position: "top",
+  //         duration: 2000,
+  //         isClosable: true,
+  //       });
+  //       nav("/");
+  //     }
+  //     return;
+  //   }
+  // };
+
   const login = async () => {
-    if (!user.email && !user.password) {
+    if (!user.email || !user.password) {
       toast({
         title: "fill in all data.",
         status: "warning",
@@ -44,13 +80,12 @@ export default function LoginPage() {
         isClosable: true,
       });
     } else {
-      const result = await axios.post("http://localhost:2000/users/v1", user);
-      console.log(result.data);
-      // alert(result.data.message);
-      if (!result.data.value) {
+      const status = await dispatch(userLogin(user));
+
+      if (!status.valid) {
         // alert("email atau password salah");
         toast({
-          title: "Wrong Email/Password.",
+          title: "email/password salah",
           status: "error",
           position: "top",
           duration: 1000,
@@ -59,7 +94,7 @@ export default function LoginPage() {
       } else {
         // alert(result.data.message);
         toast({
-          title: "Success Login.",
+          title: status.msg,
           status: "success",
           position: "top",
           duration: 2000,
@@ -70,27 +105,6 @@ export default function LoginPage() {
       return;
     }
   };
-
-  // async function login() {
-  //   const status = await dispatch(userLogin(user));
-  //   alert(status);
-
-  //   if (status) {
-  //     toast({
-  //       title: "Account Created.",
-  //       status: "success",
-  //       duration: 9000,
-  //       isClosable: true,
-  //     });
-  //     return nav("/");
-  //   }
-  //   return toast({
-  //     title: "Wrong Email/Password.",
-  //     status: "error",
-  //     duration: 9000,
-  //     isClosable: true,
-  //   });
-  // }
 
   return (
     <Box w="100vw" h="100vh" bgGradient="linear(to-b, white, #21b3b8)">

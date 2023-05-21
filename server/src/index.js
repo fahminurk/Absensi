@@ -7,12 +7,7 @@ const PORT = process.env.PORT;
 const db = require("./models/");
 const routes = require("./routes");
 
-// const Branch = db.Branch;
-// const Lecturer = db.Lecturer;
-// Lecturer.sync();
-// db.Branch.sync({ alter: true });
-
-db.sequelize.sync({ alter: true });
+// db.sequelize.sync({ alter: true });
 
 app.use(cors());
 app.use(express.json());

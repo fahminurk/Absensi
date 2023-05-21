@@ -1,10 +1,11 @@
-import { Box, Flex, Input, Link } from "@chakra-ui/react";
+import { Box, Center, Divider, Flex, Input } from "@chakra-ui/react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import Footer from "../components/Footer";
 import moment from "moment";
 import axios from "axios";
 import { FiArrowLeft } from "react-icons/fi";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 export default function AttendanceLogPage() {
   return (
@@ -18,11 +19,9 @@ export default function AttendanceLogPage() {
           alignItems={"center"}
           paddingLeft={3}
         >
-          <Box>
-            <Link to="/login">
-              <FiArrowLeft size={"25px"} />
-            </Link>
-          </Box>
+          <Link to={"/"}>
+            <FiArrowLeft size={"25px"} />
+          </Link>
 
           <Box marginLeft={"100px"}>Attendance Log</Box>
         </Flex>
@@ -45,6 +44,10 @@ export default function AttendanceLogPage() {
                 <Box>icon</Box>
               </Flex>
             </TabPanel>
+            <Center>
+              <Divider w={"330px"} />
+            </Center>
+
             <TabPanel>
               <p>tAttendance</p>
             </TabPanel>
