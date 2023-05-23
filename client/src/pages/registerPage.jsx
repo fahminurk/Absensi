@@ -43,7 +43,7 @@ export default function RegisterPage() {
   //get daftar company
   useEffect(() => {
     async function getCompany() {
-      const res = await axios.get("http://192.168.203.43:2000/users/companies");
+      const res = await axios.get("http://localhost:2000/users/companies");
       console.log(res.data);
       setCompanies(res.data);
     }
@@ -68,7 +68,7 @@ export default function RegisterPage() {
         isClosable: true,
       });
     } else {
-      const result = await axios.post("http://192.168.203.43:2000/users", user);
+      const result = await axios.post("http://localhost:2000/users", user);
       toast({
         title: result.data.message,
         status: "success",

@@ -18,7 +18,7 @@ export default function AttendanceLogPage() {
       return nav("/login");
     }
     await axios
-      .post("http://192.168.203.43:2000/attendances", {
+      .post("http://localhost:2000/attendances", {
         month: e ? e.target.value.split("-")[1] : moment().format("MM"),
         year: e ? e.target.value.split("-")[0] : moment().format("yyyy"),
         UserId: userSelector.id,

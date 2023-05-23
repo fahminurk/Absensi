@@ -6,6 +6,7 @@ const { nanoid } = require("nanoid");
 const moment = require("moment");
 const mailer = require("../lib/mailer");
 const url = process.env.URL;
+const url_image = process.env.URL_IMAGE;
 
 const userController = {
   //register
@@ -241,6 +242,28 @@ const userController = {
     } catch (err) {
       res.status(500).send({ message: err.message });
     }
+  },
+  uploadAvatar: async (req, res) => {
+    const { filename } = req.file;
+
+    await db.User.update(
+      {
+        avatar_url: url_image + filename,
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+
+    await db.User.findOne({
+      where: {
+        id: req.params.id,
+      },
+    }).then((result) => res.send(result));
+
+    // res.send(filename);
   },
 };
 

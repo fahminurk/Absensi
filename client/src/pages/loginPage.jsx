@@ -8,7 +8,7 @@ import {
   InputRightElement,
   useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -34,6 +34,9 @@ export default function LoginPage() {
     setUser(tempUser);
     console.log(tempUser);
   };
+  //
+
+  useEffect(() => {}, []);
 
   //function login
   const login = async () => {
@@ -47,9 +50,9 @@ export default function LoginPage() {
       });
     } else {
       await axios
-        .post("http://192.168.203.43:2000/users/v2", user)
+        .post("http://localhost:2000/users/v2", user)
         .then((res) => {
-          localStorage.setItem("user", JSON.stringify(res.data.value));
+          localStorage.setItem("user", JSON.stringify(res.data.token));
           dispatch({
             type: "login",
             payload: res.data.value,
@@ -66,28 +69,6 @@ export default function LoginPage() {
           })
         );
 
-      // const status = await dispatch(userLogin(user));
-
-      // if (!status.valid) {
-      //   // alert("email atau password salah");
-      //   toast({
-      //     title: "email/password salah",
-      //     status: "error",
-      //     position: "top",
-      //     duration: 1000,
-      //     isClosable: true,
-      //   });
-      // } else {
-      //   // alert(result.data.message);
-      //   toast({
-      //     title: status.msg,
-      //     status: "success",
-      //     position: "top",
-      //     duration: 2000,
-      //     isClosable: true,
-      //   });
-      //   nav("/");
-      // }
       return;
     }
   };

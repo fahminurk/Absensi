@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers").userController;
+const { fileUploader } = require("../middlewares/multer");
 
 //register
 router.post("/", userController.register); //register
@@ -22,5 +23,13 @@ router.patch("/v4", userController.getByTokenV2, userController.changePassword);
 
 //mengirim token ke email user
 router.get("/generate-token/email", userController.generateTokenByEmail);
+
+router.post(
+  "/image/v1/:id",
+  fileUploader({
+    destinationFolder: "avatar",
+  }).single("avatar"),
+  userController.uploadAvatar
+);
 
 module.exports = router;

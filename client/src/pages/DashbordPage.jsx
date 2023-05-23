@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Button } from "@chakra-ui/react";
+import { Box, Center, Flex, Button, Avatar } from "@chakra-ui/react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import Footer from "../components/Footer";
 import moment from "moment";
@@ -25,7 +25,7 @@ export default function DashboardPage() {
       }, 1000);
     }, [time]);
 
-    return <> {moment().format("hh:mm:ss")} </>;
+    return <> {moment().format("hh : mm : ss")} </>;
   };
 
   //
@@ -35,7 +35,7 @@ export default function DashboardPage() {
         return nav("/login");
       }
       await axios
-        .get("http://192.168.203.43:2000/attendances/", {
+        .get("http://localhost:2000/attendances/", {
           params: {
             date: moment().format("yyyy-MM-DD"),
             UserId: userSelector.id,
@@ -52,7 +52,7 @@ export default function DashboardPage() {
     console.log(id);
     console.log(moment().format("HH:mm"));
     await axios
-      .post("http://192.168.203.43:2000/attendances/v1", {
+      .post("http://localhost:2000/attendances/v1", {
         UserId: userSelector.id,
         [id]: moment().format("HH:mm"),
       })
@@ -73,9 +73,11 @@ export default function DashboardPage() {
             bgGradient="linear(to-b, black, white)"
           >
             <Center fontWeight={"500"} flexDir={"column"} h="400px">
-              <Box> Live Attendance</Box>
               <Center padding={"20px"} flexDir={"column"}>
-                welcome, {userSelector?.name}
+                <Box>welcome, {userSelector?.name}</Box>
+                <Box p={"5px"}>
+                  <Avatar size={"md"} src={userSelector.avatar_url} />
+                </Box>
                 <Box fontSize={"40px"} fontWeight={"500"}>
                   {LiveJam()}
                 </Box>
@@ -85,7 +87,7 @@ export default function DashboardPage() {
               </Center>
 
               <Flex
-                bgColor={"white"}
+                bgGradient="linear(to-b, white, #f3f3f3ff)"
                 h={"100%"}
                 w="100%"
                 borderRadius={"10px"}

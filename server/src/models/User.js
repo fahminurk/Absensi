@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
       email: {
         type: Sequelize.STRING,
       },
+      avatar_url: {
+        type: Sequelize.STRING,
+      },
     },
     {
       paranoid: true,

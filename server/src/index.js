@@ -16,6 +16,7 @@ app.get("/", (req, res) => res.send("sequelize"));
 
 app.use("/users", routes.userRoutes);
 app.use("/attendances", routes.attendanceLogRoutes);
+app.use("/avatar", express.static(`${__dirname}/public/avatar`));
 // app.use("/companies", routes.companyRoutes);
 
 app.listen(PORT, () => {
