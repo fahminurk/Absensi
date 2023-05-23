@@ -10,26 +10,28 @@ import {
   InputGroup,
   InputRightElement,
   Link,
+  Select,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
+import { MdArrowDropDown } from "react-icons/md";
 
 export default function RegisterPage() {
   const nav = useNavigate();
   const toast = useToast();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
-
+  //
   const [user, setUser] = useState({
     name: "",
     address: "",
     email: "",
     password: "",
-    company_id: 0,
+    CompanyId: 0,
   });
+  const [companies, setCompanies] = useState([]);
 
-  useEffect(() => {}, [user]);
-
+  //fungsi input
   function inputHandler(e) {
     const { id, value } = e.target;
     const tempUser = { ...user };
@@ -38,6 +40,16 @@ export default function RegisterPage() {
     console.log(tempUser);
   }
 
+  //get daftar company
+  useEffect(() => {
+    async function getCompany() {
+      const res = await axios.get("http://192.168.203.43:2000/users/companies");
+      console.log(res.data);
+      setCompanies(res.data);
+    }
+    getCompany();
+  }, []);
+
   const register = async () => {
     if (
       !(
@@ -45,7 +57,7 @@ export default function RegisterPage() {
         user.address &&
         user.email &&
         user.password &&
-        user.company_id
+        user.CompanyId
       )
     ) {
       toast({
@@ -56,35 +68,42 @@ export default function RegisterPage() {
         isClosable: true,
       });
     } else {
-      const result = await axios.post("http://localhost:2000/users", user);
-      alert(result.data.message);
+      const result = await axios.post("http://192.168.203.43:2000/users", user);
+      toast({
+        title: result.data.message,
+        status: "success",
+        position: "top",
+        duration: 1000,
+        isClosable: true,
+      });
       return nav("/login");
     }
   };
 
   return (
-    <Box w="100vw" h="100vh" bgGradient="linear(to-b, #303030, black)">
-      <Center w="100%" h="100%">
+    <Box w="100vw" h="100vh">
+      <Center w="100%" h="100%" p={"10px"}>
         <Flex
           // bgColor={"white"}
-          bgGradient="linear(to-b, black, #303030)"
+
           w="400px"
           flexDir={"column"}
           padding="20px"
           gap="10px"
           borderRadius={"10px"}
+          border={"4px"}
         >
           <Box
             fontWeight={"bold"}
             fontSize={"20px"}
             fontFamily={"sans-serif"}
-            color={"white"}
+            color={"black"}
           >
             Daftar Akun Baru
           </Box>
 
           <Box>
-            <Box fontWeight={"500"} paddingBottom={"10px"} color={"white"}>
+            <Box fontWeight={"500"} paddingBottom={"10px"}>
               Email
             </Box>
             <Input
@@ -92,11 +111,11 @@ export default function RegisterPage() {
               onChange={inputHandler}
               fontSize={12}
               placeholder="Email..."
-              color={"white"}
+              variant={"filled"}
             ></Input>
           </Box>
           <Box>
-            <Box fontWeight={"500"} paddingBottom={"10px"} color={"white"}>
+            <Box fontWeight={"500"} paddingBottom={"10px"}>
               {" "}
               Password
             </Box>
@@ -107,7 +126,7 @@ export default function RegisterPage() {
                 onChange={inputHandler}
                 fontSize={12}
                 placeholder="Password..."
-                color={"white"}
+                variant={"filled"}
               />
               <InputRightElement width="4.5rem">
                 <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -118,7 +137,7 @@ export default function RegisterPage() {
           </Box>
 
           <Box>
-            <Box fontWeight={"500"} paddingBottom={"10px"} color={"white"}>
+            <Box fontWeight={"500"} paddingBottom={"10px"}>
               Name
             </Box>
             <Input
@@ -126,32 +145,38 @@ export default function RegisterPage() {
               onChange={inputHandler}
               fontSize={12}
               placeholder="Name..."
-              color={"white"}
+              variant={"filled"}
             ></Input>
           </Box>
 
           <Box>
-            <Box fontWeight={"500"} paddingBottom={"10px"} color={"white"}>
-              Company ID
+            <Box fontWeight={"500"} paddingBottom={"10px"}>
+              Company
             </Box>
-            <Input
-              id="company_id"
+            <Select
+              id="CompanyId"
               onChange={inputHandler}
-              fontSize={12}
-              placeholder="Company ID..."
-              color={"white"}
-            ></Input>
+              placeholder="Pilih Company"
+              icon={<MdArrowDropDown />}
+              variant={"filled"}
+            >
+              {companies?.map((val) => (
+                <option key={val.id} value={val.id}>
+                  {val.name}
+                </option>
+              ))}
+            </Select>
           </Box>
 
           <Box>
-            <Box fontWeight={"500"} paddingBottom={"10px"} color={"white"}>
+            <Box fontWeight={"500"} paddingBottom={"10px"}>
               Address
             </Box>
             <Textarea
               id="address"
               onChange={inputHandler}
               fontSize={12}
-              color={"white"}
+              variant={"filled"}
             ></Textarea>
           </Box>
 
@@ -160,7 +185,7 @@ export default function RegisterPage() {
             bg={"black"}
             color={"white"}
             onClick={register}
-            _hover={{ color: "black", bg: "white" }}
+            _hover={{ bg: "#474747" }}
           >
             Register
           </Button>

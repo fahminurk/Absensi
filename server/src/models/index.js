@@ -52,14 +52,7 @@ db.AttendanceLog = require("./AttendanceLog")(sequelize, Sequelize);
 db.Company = require("./Company")(sequelize, Sequelize);
 db.Token = require("./Token")(sequelize, Sequelize);
 
-db.User.belongsTo(db.Company, {
-  foreignKey: "company_id",
-  as: "Company",
-});
-
-db.AttendanceLog.belongsTo(db.User, {
-  foreignKey: "user_id",
-  as: "User",
-});
+db.User.belongsTo(db.Company);
+db.AttendanceLog.belongsTo(db.User);
 
 module.exports = db;

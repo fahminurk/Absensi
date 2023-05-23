@@ -1,21 +1,20 @@
-import { auth_types } from "./types";
-
 const init = {
   email: "",
   password: "",
 };
 
 function userReducer(state = init, action) {
-  if (action.type == auth_types.login) {
+  if (action.type == "login") {
     return {
       ...state,
+      id: action.payload.id,
       email: action.payload.email,
-      password: action.payload.password,
+      // password: action.payload.password,
       name: action.payload.name,
-      company_id: action.payload.company_id,
+      // company_id: action.payload.company_id,
       address: action.payload.address,
     };
-  } else if (action.type == auth_types.logout) {
+  } else if (action.type == "logout") {
     return init;
   }
   return state;

@@ -4,174 +4,58 @@ const jwt = require("jsonwebtoken");
 const private_key = process.env.private_key;
 const { nanoid } = require("nanoid");
 const moment = require("moment");
+const mailer = require("../lib/mailer");
+const url = process.env.URL;
 
 const userController = {
-  getAll: async (req, res) => {
+  //register
+  register: async (req, res) => {
     try {
-      const user = await db.User.findAll({
-        include: [{ model: db.Company, as: "Company" }],
-      });
-      console.log(user);
-      return res.send(user);
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        message: err.message,
-      });
-    }
-  },
-  getById: async (req, res) => {
-    try {
-      const user = await db.User.findOne({
-        where: {
-          id: req.params.id,
-        },
-      });
-      return res.send(user);
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        message: err.message,
-      });
-    }
-  },
-
-  getByToken: async (req, res) => {
-    const { token } = req.query;
-
-    let user = jwt.verify(token, private_key);
-    user = await db.User.findOne({
-      where: {
-        id: user.id,
-      },
-    });
-    delete user.dataValues.password;
-
-    res.send(user);
-  },
-  getByTokenV2: async (req, res) => {
-    try {
-      const { token } = req.query;
-
-      let payload = await db.Token.findOne({
-        where: {
-          token,
-          expired: {
-            [db.Sequelize.Op.gt]: moment(),
-            [db.Sequelize.Op.lte]: moment().add(1, "d"),
-          },
-        },
-      });
-
-      user = await db.User.findOne({
-        where: {
-          id: JSON.parse(payload.dataValues.payload).id,
-        },
-      });
-      delete user.dataValues.password;
-
-      res.send(user);
-    } catch (err) {
-      return res.status(500).send(err.message);
-    }
-  },
-  insertUser: async (req, res) => {
-    try {
-      const { name, address, email, password, company_id } = req.body;
-
+      const { email, password, name, CompanyId, address } = req.body;
       const hashPassword = await bcrypt.hash(password, 10);
       console.log(hashPassword);
 
       await db.User.create({
-        name,
-        address,
         email,
         password: hashPassword,
-        company_id,
+        name,
+        address,
+        CompanyId,
       });
+
       return res.send({
         message: "register berhasil",
       });
     } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        message: err.message,
-      });
+      console.log(err.message);
+      return res.status(500).send(err.message);
     }
-  },
-  editUser: async (req, res) => {
-    try {
-      const { name, address, email, password } = req.body;
-      await db.User.update(
-        {
-          name,
-          address,
-          email,
-          password,
-        },
-        {
-          where: {
-            id: req.params.id,
-          },
-        }
-      );
-      return await db.User.findOne({
-        where: {
-          id: req.params.id,
-        },
-      }).then((result) =>
-        res.send({
-          message: `ID ${req.params.id} has been updated`,
-          data: result,
-        })
-      );
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        message: err.message,
-      });
-    }
-  },
-  deleteUser: async (req, res) => {
-    try {
-      await db.User.destroy({
-        where: {
-          id: req.params.id,
-        },
-      });
-      return await db.User.findAll().then((result) =>
-        res.send({
-          message: `ID ${req.params.id} has been removed`,
-          data: result,
-        })
-      );
-    } catch (err) {}
   },
 
+  //login menggunakan JWT
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
+
       const user = await db.User.findOne({
         where: {
           email,
         },
       });
-      console.log(user);
+
       if (user) {
         const match = await bcrypt.compare(password, user.dataValues.password);
-
         if (match) {
           const payload = {
             id: user.dataValues.id,
           };
-          console.log(private_key);
           const token = jwt.sign(payload, private_key, {
             expiresIn: "1h",
           });
 
           console.log(token);
 
-          return res.status(200).send({
+          return res.send({
             message: "login berhasil",
             value: user,
             token,
@@ -187,6 +71,8 @@ const userController = {
       return res.status(500).send({ message: err.message });
     }
   },
+
+  //login menggunakan nanoid
   loginV2: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -195,10 +81,9 @@ const userController = {
           email,
         },
       });
-      console.log(user);
-      if (user) {
-        const match = await bcrypt.compare(password, user.dataValues.password);
 
+      if (user) {
+        const match = bcrypt.compare(password, user.dataValues.password);
         if (match) {
           const payload = {
             id: user.dataValues.id,
@@ -212,7 +97,9 @@ const userController = {
             payload: JSON.stringify(payload),
           });
 
-          return res.status(200).send({
+          console.log(token);
+
+          return res.send({
             message: "login berhasil",
             value: user,
             token: token.dataValues.token,
@@ -224,40 +111,137 @@ const userController = {
         throw new Error("user not found");
       }
     } catch (err) {
-      console.log(err.message);
+      // console.log(err.message);
       return res.status(500).send({ message: err.message });
     }
   },
 
-  // login: async (req, res) => {
-  //   try {
-  //     const { email, password } = req.body;
-  //     console.log(req.body);
-  //     const user = await db.User.findOne({
-  //       where: {
-  //         email,
-  //         password,
-  //       },
-  //     });
+  // option pilihan company di register
+  getCompanies: async (req, res) => {
+    await db.Company.findAll().then((data) => res.send(data));
+  },
 
-  //     if (!user?.dataValues.id) {
-  //       // return res.send({
-  //       //   message: "login gagal",
-  //       // });
-  //       return res.status(210).send({
-  //         message: "email/password salah",
-  //         value: user,
-  //       });
-  //     }
-  //     return res.status(200).send({
-  //       message: "login berhasil",
-  //       value: user,
-  //     });
-  //   } catch (err) {
-  //     console.log(err.message);
-  //     return res.status(500).send(err.message);
-  //   }
-  // },
+  //get token JWT
+  getByToken: async (req, res) => {
+    const { token } = req.query;
+    let user = jwt.verify(token, private_key);
+
+    user = await db.User.findOne({
+      where: {
+        id: user.id,
+      },
+    });
+
+    delete user.dataValues.password;
+
+    res.send(user);
+  },
+
+  //get token nanoid
+  getByTokenV2: async (req, res, next) => {
+    try {
+      const { token } = req.query;
+      console.log(token);
+      let p = await db.Token.findOne({
+        where: {
+          token,
+          expired: {
+            [db.Sequelize.Op.gte]: moment().format(),
+          },
+          valid: true,
+        },
+      });
+
+      if (!p) {
+        throw new Error("token has expired");
+      }
+      console.log(p.dataValues);
+      user = await db.User.findOne({
+        where: {
+          id: JSON.parse(p.dataValues.payload).id,
+        },
+      });
+
+      delete user.dataValues.password;
+
+      req.user = user;
+      next();
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({ message: err.message });
+    }
+  },
+
+  //
+  getUserByToken: async (req, res) => {
+    res.send(req.user);
+  },
+
+  // mengirimkan token ke email user
+  generateTokenByEmail: async (req, res) => {
+    try {
+      const { email } = req.query;
+
+      const user = await db.User.findOne({
+        where: {
+          email,
+        },
+      });
+
+      if (user.dataValues) {
+        await db.Token.upate(
+          {
+            valid: false,
+          },
+          {
+            where: {
+              payload: JSON.stringify({ id: user.dataValues.id }),
+              status: "FORGOT-PASSWORD", // {"id": 1}
+            },
+          }
+        );
+
+        const generateToken = nanoid();
+        const token = await db.Token.create({
+          expired: moment().add(5, "minutes").format(),
+          token: generateToken,
+          payload: JSON.stringify({ id: user.dataValues.id }),
+          status: "FORGOT - PASSWORD",
+        });
+
+        mailer({
+          subject: "hello",
+          to: "fahminurk31@gmail.com",
+          text: url + token.dataValues.token,
+        });
+
+        return res.send({ message: "silahkan check email anda" });
+      } else {
+        throw new Error("user not found");
+      }
+    } catch (err) {
+      res.status(500).send({ message: err.message });
+    }
+  },
+
+  //change password
+  changePassword: async (req, res) => {
+    try {
+      const { token } = req.query;
+      const { password } = req.body.user;
+      const { id } = req.user;
+
+      console.log(id);
+
+      const hashPassword = await bcrypt.hash(password, 10);
+
+      await db.User.update({ password: hashPassword }, { where: { id } });
+      await db.Token.update({ valid: false }, { where: { token } });
+      res.send({ message: "password berhasil diubah" });
+    } catch (err) {
+      res.status(500).send({ message: err.message });
+    }
+  },
 };
 
 module.exports = userController;

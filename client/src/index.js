@@ -8,7 +8,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 import rootReducer from "./redux/store";
-import AuthProvider from "./hoc/AuthProvider";
 
 const store = configureStore({ reducer: rootReducer, middleware: [thunk] });
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -16,9 +15,7 @@ root.render(
   <Provider store={store}>
     <ChakraProvider>
       <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <App />
       </BrowserRouter>
     </ChakraProvider>
   </Provider>

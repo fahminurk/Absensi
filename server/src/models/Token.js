@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const token = sequelize.define(
-    "Tokens", //name table
+    "Tokens", //nama table
     {
       token: {
         type: Sequelize.STRING,
@@ -11,10 +11,18 @@ module.exports = (sequelize, Sequelize) => {
       payload: {
         type: Sequelize.STRING,
       },
-    }, // nama kolom
+      valid: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+      },
+      status: {
+        type: Sequelize.ENUM("LOGIN", "FORGOT-PASSWORD"),
+      },
+    }, // nama nama kolom
     {
       paranoid: true,
-    } // option
+    } // options
   );
+
   return token;
 };

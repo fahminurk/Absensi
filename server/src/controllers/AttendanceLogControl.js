@@ -1,94 +1,100 @@
 const db = require("../models");
+const Sequelize = require("sequelize");
+const moment = require("moment");
 
-const AttendanceLogController = {
-  getAll: async (req, res) => {
-    const AttendanceLog = await db.AttendanceLog.findAll({
-      include: { model: db.User, as: "User" },
-    });
-    console.log(AttendanceLog);
-    return res.send(AttendanceLog);
-  },
-  getById: async (req, res) => {
-    const AttendanceLog = await db.AttendanceLog.findOne({
-      where: {
-        id: req.params.id,
-      },
-    });
-    return res.send(AttendanceLog);
-  },
-
-  insertAttendanceLog: async (req, res) => {
+const attendanceController = {
+  //
+  getByMonthAndUser: async (req, res) => {
     try {
-      const { checkIn, checkOut, user_id } = req.body;
-      await db.AttendanceLog.create({
-        checkIn,
-        checkOut,
-        user_id,
+      const { month, year, UserId } = req.body;
+      const attendance = await db.AttendanceLog.findAll({
+        where: {
+          [Sequelize.Op.and]: [
+            Sequelize.where(
+              Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+              month
+            ),
+            Sequelize.where(
+              Sequelize.fn("YEAR", Sequelize.col("createdAt")),
+              year
+            ),
+            { UserId },
+          ],
+        },
       });
-      return await db.AttendanceLog.findAll().then((result) => {
-        res.send({
-          msg: `new AttendanceLog added`,
-          data: result,
-        });
+
+      return res.send({
+        value: attendance,
       });
     } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        msg: err.message,
-      });
+      return res.status(500).send(err.message);
     }
   },
-  editAttendanceLog: async (req, res) => {
+
+  //
+  getToday: async (req, res) => {
     try {
-      const { checkIn, checkOut } = req.body;
-      await db.AttendanceLog.update(
-        {
-          checkIn,
-          checkOut,
-        },
-        {
-          where: {
-            id: req.params.id,
+      const { date, UserId } = req.query;
+      const attendance = await db.AttendanceLog.findOne({
+        where: {
+          UserId,
+          createdAt: {
+            [Sequelize.Op.gt]: date,
+            [Sequelize.Op.lte]: moment(date).add(1, "d").format("yyyy-MM-DD"),
           },
-        }
-      );
-      return await db.AttendanceLog.findOne({
-        where: {
-          id: req.params.id,
         },
-      }).then((result) =>
-        res.send({
-          msg: `ID ${req.params.id} has been updated`,
-          data: result,
-        })
-      );
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        msg: err.message,
       });
+      console.log(attendance);
+
+      return res.send(attendance);
+    } catch (err) {
+      return res.status(500).send(err.message);
     }
   },
-  deleteAttendanceLog: async (req, res) => {
+
+  //
+  createAttendance: async (req, res) => {
     try {
-      await db.AttendanceLog.destroy({
-        where: {
-          id: req.params.id,
-        },
+      const { UserId, clock_in, clock_out } = req.body;
+      const now = moment().format("yyyy-MM-DD");
+
+      console.log(req.body);
+
+      await db.sequelize.transaction(async () => {
+        const cek = await db.AttendanceLog.findOne({
+          where: {
+            UserId,
+            createdAt: {
+              [Sequelize.Op.gt]: now,
+              [Sequelize.Op.lte]: moment(now).add(1, "d").format("yyyy-MM-DD"),
+            },
+          },
+        });
+        console.log(cek);
+
+        if (cek && clock_out)
+          await db.AttendanceLog.update(
+            { clock_out },
+            { where: { id: cek.dataValues.id } }
+          );
+        else if (!cek && clock_in)
+          await db.AttendanceLog.create({ clock_in, UserId });
+
+        await db.AttendanceLog.findOne({
+          where: {
+            createdAt: {
+              [Sequelize.Op.gt]: now,
+              [Sequelize.Op.lte]: moment(now).add(1, "d").format("yyyy-MM-DD"),
+            },
+            UserId,
+          },
+        }).then((result) => res.send(result));
       });
-      return await db.AttendanceLog.findAll().then((result) =>
-        res.send({
-          msg: `ID ${req.params.id} has been removed`,
-          data: result,
-        })
-      );
     } catch (err) {
-      console.log(err);
-      return res.status(500).send({
-        msg: err.message,
-      });
+      console.log(err.message);
+      res.status(500).send({ message: err.message });
     }
   },
 };
 
-module.exports = AttendanceLogController;
+module.exports = attendanceController;

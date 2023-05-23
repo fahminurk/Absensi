@@ -1,8 +1,12 @@
 module.exports = (sequelize, Sequelize) => {
-  const AttendanceLog = sequelize.define("AttendanceLog", {
-    clockIn: Sequelize.STRING,
-    clockOut: Sequelize.STRING,
-    //userID
+  const Attendance = sequelize.define("Attendances", {
+    clock_in: {
+      type: Sequelize.STRING,
+    },
+    clock_out: {
+      type: Sequelize.STRING,
+    },
   });
-  return AttendanceLog;
+
+  return Attendance;
 };
