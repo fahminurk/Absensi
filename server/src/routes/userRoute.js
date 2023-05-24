@@ -14,7 +14,7 @@ router.post("/v2", userController.loginV2); //login menggunakan nanoid
 //get token saat login
 router.get("/token", userController.getByToken); // token menggunakan JWT
 
-//
+//di pake di forget password saat mengisi email
 router.get("/v3", userController.getByTokenV2, userController.getUserByToken);
 //mendapatkan user dari token di path. apakah token exp ? kalau tidak kirim user
 

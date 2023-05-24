@@ -8,9 +8,5 @@ module.exports = {
     database: db_database,
     host: db_host,
     dialect: db_dialect,
-    dialectOptions: {
-      useUTC: false,
-    },
-    timezone: "+05:30",
   },
 };

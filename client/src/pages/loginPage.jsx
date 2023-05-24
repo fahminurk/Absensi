@@ -36,8 +36,6 @@ export default function LoginPage() {
   };
   //
 
-  useEffect(() => {}, []);
-
   //function login
   const login = async () => {
     if (!user.email || !user.password) {
@@ -52,7 +50,7 @@ export default function LoginPage() {
       await axios
         .post("http://localhost:2000/users/v2", user)
         .then((res) => {
-          localStorage.setItem("user", JSON.stringify(res.data.token));
+          localStorage.setItem("user", JSON.stringify(res.data.value));
           dispatch({
             type: "login",
             payload: res.data.value,

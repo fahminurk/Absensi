@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const moment = require("moment");
 
 const attendanceController = {
-  //
+  // di page attendancelog
   getByMonthAndUser: async (req, res) => {
     try {
       const { month, year, UserId } = req.body;
@@ -31,7 +31,7 @@ const attendanceController = {
     }
   },
 
-  //
+  // di dashboard
   getToday: async (req, res) => {
     try {
       const { date, UserId } = req.query;
@@ -52,7 +52,7 @@ const attendanceController = {
     }
   },
 
-  //
+  // clock in & clock out
   createAttendance: async (req, res) => {
     try {
       const { UserId, clock_in, clock_out } = req.body;

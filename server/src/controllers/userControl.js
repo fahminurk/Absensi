@@ -33,7 +33,7 @@ const userController = {
     }
   },
 
-  //login menggunakan JWT
+  //login menggunakan JWT (tidak di gunakan)
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -76,7 +76,7 @@ const userController = {
   //login menggunakan nanoid
   loginV2: async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password } = req.body; // di FE ada inputan email dan password di req.body
       const user = await db.User.findOne({
         where: {
           email,
@@ -84,32 +84,37 @@ const userController = {
       });
 
       if (user) {
-        const match = bcrypt.compare(password, user.dataValues.password);
+        // jika email yg di input ada di database maka..
+        const match = bcrypt.compare(password, user.dataValues.password); //kita cocokan pass yg di input dengan pass yg ada di database
         if (match) {
+          // jika cocok
           const payload = {
+            //membuat sebuah variable payload yg berisi id dari email tersebut
             id: user.dataValues.id,
           };
 
           const generateToken = nanoid();
           console.log(nanoid());
           const token = await db.Token.create({
-            expired: moment().add(1, "days").format(),
-            token: generateToken,
-            payload: JSON.stringify(payload),
+            // lalu membuat token untuk disimpan di localstoragedi db token yg berisi...
+            expired: moment().add(5, "minutes").format(), //membuat expired token tersebut
+            token: generateToken, //token menggunakan generate dari nanoid
+            payload: JSON.stringify(payload), //payload {id: 'id user yg login'}
           });
 
           console.log(token);
 
           return res.send({
-            message: "login berhasil",
-            value: user,
-            token: token.dataValues.token,
+            // lalu kita menggirimkan respon berupa..
+            message: "login berhasil", // message
+            value: user, // value yg berisi data2 user tersbut
+            token: token.dataValues.token, // dan token yg sudah di generate
           });
         } else {
-          throw new Error("wrong password");
+          throw new Error("wrong password"); // jika pass salah menggirimkan res error
         }
       } else {
-        throw new Error("user not found");
+        throw new Error("user not found"); // jika user tidak ada di db, meggirimkan ress error
       }
     } catch (err) {
       // console.log(err.message);
@@ -119,10 +124,10 @@ const userController = {
 
   // option pilihan company di register
   getCompanies: async (req, res) => {
-    await db.Company.findAll().then((data) => res.send(data));
+    await db.Company.findAll().then((data) => res.send(data)); // menggambil semua data company di db.company
   },
 
-  //get token JWT
+  //get token JWT (tidak digunakan)
   getByToken: async (req, res) => {
     const { token } = req.query;
     let user = jwt.verify(token, private_key);
@@ -138,7 +143,7 @@ const userController = {
     res.send(user);
   },
 
-  //get token nanoid
+  //get token nanoid (dipake di forget password)   !! tanya bwang jordan !!
   getByTokenV2: async (req, res, next) => {
     try {
       const { token } = req.query;
@@ -173,12 +178,12 @@ const userController = {
     }
   },
 
-  //
+  // !! tanya bwang jordan !!
   getUserByToken: async (req, res) => {
     res.send(req.user);
   },
 
-  // mengirimkan token ke email user
+  // mengirimkan token ke email user  !! tanya bwang jordan !!
   generateTokenByEmail: async (req, res) => {
     try {
       const { email } = req.query;
@@ -225,7 +230,7 @@ const userController = {
     }
   },
 
-  //change password
+  //change password  !! tanya bwang jordan !!
   changePassword: async (req, res) => {
     try {
       const { token } = req.query;

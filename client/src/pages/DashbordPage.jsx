@@ -15,10 +15,6 @@ export default function DashboardPage() {
   const LiveJam = () => {
     const [time, setTime] = useState(moment().format("hh:mm:ss"));
 
-    // useEffect(() => {
-    //   setTime(moment().format("hh:mm:ss"));
-    // }, []);
-
     useEffect(() => {
       setTimeout(() => {
         setTime(moment().format("hh:mm:ss"));
@@ -74,10 +70,11 @@ export default function DashboardPage() {
           >
             <Center fontWeight={"500"} flexDir={"column"} h="400px">
               <Center padding={"20px"} flexDir={"column"}>
-                <Box>welcome, {userSelector?.name}</Box>
                 <Box p={"5px"}>
                   <Avatar size={"md"} src={userSelector.avatar_url} />
                 </Box>
+                <Box>welcome, {userSelector?.name}</Box>
+
                 <Box fontSize={"40px"} fontWeight={"500"}>
                   {LiveJam()}
                 </Box>

@@ -34,7 +34,7 @@ export default function AttendanceLogPage() {
     <Flex h="100vh" alignItems={"center"} flexDir={"column"}>
       <Center
         color={"white"}
-        bgColor={"red"}
+        bgColor={"black"}
         // h="40px"
         padding={"20px"}
         fontWeight={"500"}
