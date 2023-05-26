@@ -22,7 +22,7 @@ export default function ForgotPassword() {
 
   async function changePassword() {
     await axios
-      .patch("http://localhost:2000/auth/v4?token=" + token, {
+      .patch("http://localhost:2000/users/v4?token=" + token, {
         user,
       })
       .then((res) => {
@@ -116,11 +116,8 @@ export function RequestForgotPassword() {
           email,
         },
       })
-      .then(
-        (res) => alert(res.data.message)
-        // /forgot-password/token
-        //    console.log(res.data));
-      );
+      .then((res) => alert(res.data.message));
+    // nav(res.data.nav));
   }
   return (
     <Box w="100vw" h="100vh" bgColor={"#F2F4F7"}>

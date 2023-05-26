@@ -21,7 +21,7 @@ export default function DashboardPage() {
       }, 1000);
     }, [time]);
 
-    return <> {moment().format("hh : mm : ss")} </>;
+    return <> {moment().format("hh:mm A")} </>;
   };
 
   //

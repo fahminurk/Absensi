@@ -5,6 +5,7 @@ const private_key = process.env.private_key;
 const { nanoid } = require("nanoid");
 const moment = require("moment");
 const mailer = require("../lib/mailer");
+const sharp = require("sharp");
 const url = process.env.URL;
 const url_image = process.env.URL_IMAGE;
 
@@ -82,10 +83,12 @@ const userController = {
           email,
         },
       });
+      console.log(req.body);
 
       if (user) {
         // jika email yg di input ada di database maka..
-        const match = bcrypt.compare(password, user.dataValues.password); //kita cocokan pass yg di input dengan pass yg ada di database
+        const match = await bcrypt.compare(password, user.dataValues.password); //kita cocokan pass yg di input dengan pass yg ada di database
+        console.log(match);
         if (match) {
           // jika cocok
           const payload = {
@@ -107,7 +110,7 @@ const userController = {
           return res.send({
             // lalu kita menggirimkan respon berupa..
             message: "login berhasil", // message
-            value: user, // value yg berisi data2 user tersbut
+            // value: user, // value yg berisi data2 user tersbut
             token: token.dataValues.token, // dan token yg sudah di generate
           });
         } else {
@@ -164,7 +167,7 @@ const userController = {
       console.log(p.dataValues);
       user = await db.User.findOne({
         where: {
-          id: JSON.parse(p.dataValues.payload).id,
+          id: JSON.parse(p.dataValues.payload).id, //merubah string menjadi onjek
         },
       });
 
@@ -180,6 +183,7 @@ const userController = {
 
   // !! tanya bwang jordan !!
   getUserByToken: async (req, res) => {
+    delete req.user.password;
     res.send(req.user);
   },
 
@@ -195,7 +199,7 @@ const userController = {
       });
 
       if (user.dataValues) {
-        await db.Token.upate(
+        await db.Token.update(
           {
             valid: false,
           },
@@ -212,7 +216,7 @@ const userController = {
           expired: moment().add(5, "minutes").format(),
           token: generateToken,
           payload: JSON.stringify({ id: user.dataValues.id }),
-          status: "FORGOT - PASSWORD",
+          status: "FORGOT-PASSWORD",
         });
 
         mailer({
@@ -221,11 +225,16 @@ const userController = {
           text: url + token.dataValues.token,
         });
 
-        return res.send({ message: "silahkan check email anda" });
+        // return res.send({
+        //   nav: "/forgot-password/" + token.dataValues.token,
+        // });
+        return res.send({ message: "silahkan cek email anda" });
       } else {
         throw new Error("user not found");
       }
     } catch (err) {
+      console.log(err.message);
+
       res.status(500).send({ message: err.message });
     }
   },
@@ -245,9 +254,12 @@ const userController = {
       await db.Token.update({ valid: false }, { where: { token } });
       res.send({ message: "password berhasil diubah" });
     } catch (err) {
+      console.log(err.message);
       res.status(500).send({ message: err.message });
     }
   },
+
+  //
   uploadAvatar: async (req, res) => {
     const { filename } = req.file;
 
@@ -269,6 +281,57 @@ const userController = {
     }).then((result) => res.send(result));
 
     // res.send(filename);
+  },
+  uploadAvatarV2: async (req, res) => {
+    try {
+      const buffer = await sharp(req.file.buffer)
+        .resize(250, 250)
+        .png()
+        .toBuffer();
+
+      let fullUrl =
+        req.protocol +
+        "://" +
+        req.get("host") +
+        "/users/image/render/" +
+        req.params.id;
+
+      console.log(fullUrl);
+
+      await db.User.upadate(
+        {
+          avatar_url: fullUrl,
+          avatar_blob: buffer,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+
+      res.send("berhasil uploud");
+    } catch (err) {
+      console.log(err.message);
+      res.send(err.message);
+    }
+  },
+  renderAvatar: async (req, res) => {
+    try {
+      await db.User.findOne({
+        where: {
+          id: req.params.id,
+        },
+      }).then((result) => {
+        res.set("Content-type", "image/png");
+
+        res.send(result.dataValues.avatar_blob);
+      });
+    } catch (err) {
+      return res.send({
+        message: err.message,
+      });
+    }
   },
 };
 

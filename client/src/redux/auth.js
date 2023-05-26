@@ -1,6 +1,6 @@
 const init = {
   email: "",
-  password: "",
+  // password: "",
 };
 
 function userReducer(state = init, action) {

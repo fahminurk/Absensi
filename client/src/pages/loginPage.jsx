@@ -38,6 +38,8 @@ export default function LoginPage() {
 
   //function login
   const login = async () => {
+    let token;
+
     if (!user.email || !user.password) {
       toast({
         title: "fill in all data.",
@@ -50,12 +52,13 @@ export default function LoginPage() {
       await axios
         .post("http://localhost:2000/users/v2", user)
         .then((res) => {
-          localStorage.setItem("user", JSON.stringify(res.data.value));
-          dispatch({
-            type: "login",
-            payload: res.data.value,
-          });
-          nav("/");
+          localStorage.setItem("auth", JSON.stringify(res.data.token));
+          // dispatch({
+          //   type: "login",
+          //   payload: res.data.value,
+          // });
+          // nav("/");
+          token = res.data.token;
         })
         .catch((err) =>
           toast({
@@ -66,6 +69,23 @@ export default function LoginPage() {
             isClosable: true,
           })
         );
+      // console.log(token);
+
+      await axios
+        .get("http://localhost:2000/users/v3", {
+          params: {
+            token,
+          },
+        })
+        .then((res) => {
+          dispatch({
+            type: "login",
+            payload: res.data,
+          });
+
+          nav("/");
+          console.log(res.data);
+        });
 
       return;
     }
